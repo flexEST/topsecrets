@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/// SECURE PERSONNEL DATABASE ///</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #111;
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+        }
+        .search-box {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #d00;
+            box-shadow: 0 0 10px rgba(255,0,0,0.3);
+        }
+        .person-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #111 100%);
+            border: 1px solid #d00;
+            box-shadow: 0 0 15px rgba(255,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        .person-card:hover {
+            transform: translateY(-5px);
+        }
+        .top-secret-btn {
+            background: linear-gradient(135deg, #d00 0%, #800 100%);
+            border: 1px solid #f00;
+            box-shadow: 0 0 10px rgba(255,0,0,0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        .modal-overlay {
+            background: rgba(0,0,0,0.8);
+        }
+        .password-input {
+            letter-spacing: 3px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 bg-gray-900">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8 border-b border-red-900 pb-4">
+            <h1 class="text-3xl text-red-500 mb-2">
+                <i class="fas fa-database mr-2"></i> SECURE PERSONNEL DATABASE
+            </h1>
+            <p class="text-gray-400">CLASSIFIED - LEVEL 4 CLEARANCE REQUIRED</p>
+        </header>
+
+        <!-- Search Box -->
+        <div class="search-box p-4 rounded-lg mb-8">
+            <div class="flex">
+                <input type="text" id="searchInput" placeholder="Enter target name..." 
+                       class="flex-grow bg-black border border-red-700 p-3 text-white focus:outline-none focus:ring-1 focus:ring-red-500">
+                <button id="searchBtn" class="bg-red-900 hover:bg-red-800 text-white px-6 ml-2 transition">
+                    <i class="fas fa-search mr-2"></i> SEARCH
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center py-12">
+            <i class="fas fa-user-secret text-5xl text-red-500 mb-4"></i>
+            <h3 class="text-xl text-red-400 mb-2">NO SEARCH PERFORMED</h3>
+            <p class="text-gray-400">Enter a name to begin database query</p>
+        </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer" class="space-y-6 hidden">
+            <!-- Results will be inserted here -->
+        </div>
+
+        <!-- Top Secret Button (hidden by default) -->
+        <button id="topSecretBtn" class="top-secret-btn text-white py-3 px-6 rounded-lg mt-8 mx-auto hidden flex items-center">
+            <i class="fas fa-lock mr-2"></i> ACCESS TOP SECRET FILES
+        </button>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="fixed inset-0 flex items-center justify-center z-50 hidden modal-overlay">
+        <div class="bg-black p-6 rounded-lg border border-red-900 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl text-red-500">
+                    <i class="fas fa-lock mr-2"></i> TOP SECRET CLEARANCE
+                </h3>
+                <button id="closeModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-400 mb-2">ENTER ACCESS CODE:</label>
+                <input type="password" id="passwordInput" 
+                       class="w-full bg-black border border-red-700 p-3 text-white password-input focus:outline-none focus:ring-1 focus:ring-red-500">
+            </div>
+            <p id="passwordError" class="text-red-500 text-sm mb-4 hidden">
+                <i class="fas fa-exclamation-circle mr-2"></i> ACCESS DENIED. REMAINING ATTEMPTS: <span id="attempts">3</span>
+            </p>
+            <button id="submitPassword" class="w-full bg-red-900 hover:bg-red-800 text-white py-3 rounded-lg transition">
+                VERIFY CLEARANCE
+            </button>
+            <p class="text-xs text-gray-500 mt-4 text-center">
+                <i class="fas fa-shield-alt mr-1"></i> UNAUTHORIZED ACCESS WILL BE REPORTED
+            </p>
+        </div>
+    </div>
+
+    <!-- Top Secret Content Modal -->
+    <div id="secretContentModal" class="fixed inset-0 flex items-center justify-center z-50 hidden modal-overlay">
+        <div class="bg-black p-6 rounded-lg border border-red-900 w-full max-w-2xl max-h-[80vh] overflow-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl text-red-500">
+                    <i class="fas fa-user-secret mr-2"></i> TOP SECRET DOSSIER
+                </h3>
+                <button id="closeSecretModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="border-b border-red-900 pb-4">
+                    <h4 class="text-lg text-red-400 mb-2">OPERATION MIDNIGHT SUN</h4>
+                    <p class="text-gray-300">Initiated: <span class="text-white">2021-03-15</span></p>
+                    <p class="text-gray-300">Status: <span class="text-yellow-400">ACTIVE</span></p>
+                    <p class="mt-2">Deep cover operation involving sleeper agents across Eastern Europe. Primary objective: monitor and disrupt weapons trafficking networks.</p>
+                </div>
+                
+                <div class="border-b border-red-900 pb-4">
+                    <h4 class="text-lg text-red-400 mb-2">ASSET LIST</h4>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Agent Falcon (Active - Baku)</li>
+                        <li>Agent Nightingale (Inactive - Missing since 2022)</li>
+                        <li>Agent Raven (Compromised - Extraction pending)</li>
+                        <li>Agent Wolf (Deep cover - Location classified)</li>
+                    </ul>
+                </div>
+                
+                <div class="border-b border-red-900 pb-4">
+                    <h4 class="text-lg text-red-400 mb-2">ENCRYPTION KEYS</h4>
+                    <div class="bg-gray-900 p-3 rounded font-mono text-sm overflow-x-auto">
+                        <p>Mainframe: XK-2099-ALPHA-7</p>
+                        <p>Satellite: VK-7742-OMEGA-3</p>
+                        <p>Emergency: ZK-5566-ZULU-9</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg text-red-400 mb-2">CONTINGENCY PROTOCOLS</h4>
+                    <p class="text-gray-300">In case of compromise:</p>
+                    <ol class="list-decimal pl-5 space-y-2 mt-2">
+                        <li>Activate emergency channels (Code Black)</li>
+                        <li>Purge all local databases</li>
+                        <li>Initiate false flag operation (Operation Mockingbird)</li>
+                        <li>Evacuate priority assets</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database of people
+        const people = [
+            {
+                id: 1,
+                name: "Ali Mehdiyev",
+                clearance: "LEVEL 4",
+                status: "ACTIVE",
+                statusColor: "text-green-400",
+                location: "Baku, Azerbaijan",
+                associates: ["", "REDACTED", "REDACTED"],
+                notes: [
+                    "Subject shows exceptional technical skills",
+                    "Possible connection to 2022 incident"
+                ],
+                secrets: [
+                    "Operative has black ops training",
+                    "Last known operation: Operation Midnight",
+                    "WARNING: compromised identity"
+                ]
+            },
+            {
+                id: 2,
+                name: "Kamal Tagiyev",
+                clearance: "LEVEL 5",
+                status: "UNDER SURVEILLANCE",
+                statusColor: "text-yellow-400",
+                location: "Undisclosed, Azerbaijan",
+                associates: ["", "REDACTED", "REDACTED"],
+                notes: [
+                    "Subject possesses sensitive knowledge",
+                    "Confirmed financial anomalies"
+                ],
+                secrets: [
+                    "Possible double agent activity",
+                    "Connection to foreign agency confirmed",
+                    "ALERT: terminate if compromised"
+                ]
+            },
+            {
+                id: 3,
+                name: "Elchin Sadiqzade",
+                clearance: "LEVEL 3",
+                status: "IN PROTECTION",
+                statusColor: "text-blue-400",
+                location: "Baku, safe house",
+                associates: ["", "REDACTED"],
+                notes: [
+                    "Primary informant for region",
+                    "Has provided 87 verified reports"
+                ],
+                secrets: [
+                    "Real name: classified",
+                    "Compromised in 2021 incident",
+                    "NOTE: extraction pending"
+                ]
+            },
+            {
+                id: 4,
+                name: "Wagif Sadiqzade",
+                clearance: "LEVEL 4",
+                status: "ACTIVE",
+                statusColor: "text-green-400",
+                location: "Baku, street Mehmandarov 94",
+                associates: [""],
+                notes: [
+                    "Master of encryption techniques",
+                    "Developed secure comms protocol"
+                ],
+                secrets: [
+                    "Former military intelligence",
+                    "Created unbreakable cipher in 2019",
+                    "WARNING: high-value target"
+                ]
+            },
+            {
+                id: 5,
+                name: "Cavidan Mirili",
+                clearance: "LEVEL 5",
+                status: "Objective",
+                statusColor: "text-purple-400",
+                location: "Baku, Azerbaijan",
+                associates: ["REDACTED", "REDACTED"],
+                notes: [
+                    "No digital footprint since 2018",
+                    "Suspected deep cover operation"
+                ],
+                secrets: [
+                    "True identity: classified",
+                    "Current mission: absolute secrecy",
+                    "DIRECTIVE: do not approach"
+                ]
+            }
+        ];
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const emptyState = document.getElementById('emptyState');
+        const topSecretBtn = document.getElementById('topSecretBtn');
+        const passwordModal = document.getElementById('passwordModal');
+        const closeModal = document.getElementById('closeModal');
+        const passwordInput = document.getElementById('passwordInput');
+        const submitPassword = document.getElementById('submitPassword');
+        const passwordError = document.getElementById('passwordError');
+        const secretContentModal = document.getElementById('secretContentModal');
+        const closeSecretModal = document.getElementById('closeSecretModal');
+        const attemptsDisplay = document.getElementById('attempts');
+
+        let attemptsLeft = 3;
+
+        // Search function
+        function searchPeople(query) {
+            if (!query.trim()) {
+                emptyState.classList.remove('hidden');
+                resultsContainer.classList.add('hidden');
+                topSecretBtn.classList.add('hidden');
+                return;
+            }
+
+            const results = people.filter(person => 
+                person.name.toLowerCase().includes(query.toLowerCase())
+            );
+
+            if (results.length === 0) {
+                emptyState.classList.remove('hidden');
+                resultsContainer.classList.add('hidden');
+                topSecretBtn.classList.add('hidden');
+                emptyState.innerHTML = `
+                    <i class="fas fa-user-slash text-5xl text-red-500 mb-4"></i>
+                    <h3 class="text-xl text-red-400 mb-2">NO RECORDS FOUND</h3>
+                    <p class="text-gray-400">No personnel match your search query</p>
+                `;
+            } else {
+                emptyState.classList.add('hidden');
+                resultsContainer.classList.remove('hidden');
+                topSecretBtn.classList.remove('hidden');
+                displayResults(results);
+            }
+        }
+
+        // Display results
+        function displayResults(results) {
+            resultsContainer.innerHTML = '';
+            
+            results.forEach(person => {
+                const card = document.createElement('div');
+                card.className = 'person-card rounded-lg p-6';
+                card.innerHTML = `
+                    <h2 class="text-xl text-red-400 mb-4 flex items-center">
+                        <i class="fas fa-user-secret mr-2"></i> ${person.name}
+                        <span class="ml-auto bg-red-900 text-xs px-2 py-1 rounded">CLEARANCE: ${person.clearance}</span>
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <p class="text-gray-400">Location:</p>
+                            <p>${person.location}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Status:</p>
+                            <p class="${person.statusColor}">${person.status}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-gray-400">Known Associates:</p>
+                        <p>${person.associates.join(', ')}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-gray-400">Notes:</p>
+                        <div class="bg-gray-900 p-3 rounded border border-gray-700">
+                            ${person.notes.map(note => `<p>${note}</p>`).join('')}
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-gray-400">Full Disclosure:</p>
+                        <div class="bg-black p-3 rounded border border-red-900 text-red-400">
+                            <p class="mb-2">// CLASSIFIED - EYES ONLY //</p>
+                            ${person.secrets.map(secret => `<p>${secret}</p>`).join('')}
+                        </div>
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+            });
+        }
+
+        // Event listeners
+        searchBtn.addEventListener('click', () => searchPeople(searchInput.value));
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchPeople(searchInput.value);
+            }
+        });
+
+        topSecretBtn.addEventListener('click', () => {
+            passwordModal.classList.remove('hidden');
+            passwordInput.value = '';
+            passwordError.classList.add('hidden');
+        });
+
+        closeModal.addEventListener('click', () => {
+            passwordModal.classList.add('hidden');
+        });
+
+        submitPassword.addEventListener('click', () => {
+            const password = passwordInput.value;
+            if (password === 'est2025x') {
+                // Correct password
+                passwordModal.classList.add('hidden');
+                secretContentModal.classList.remove('hidden');
+                attemptsLeft = 3; // Reset attempts
+            } else {
+                // Incorrect password
+                attemptsLeft--;
+                attemptsDisplay.textContent = attemptsLeft;
+                passwordError.classList.remove('hidden');
+                
+                if (attemptsLeft <= 0) {
+                    passwordError.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i> ACCESS LOCKED. SECURITY ALERT TRIGGERED';
+                    submitPassword.disabled = true;
+                    setTimeout(() => {
+                        passwordModal.classList.add('hidden');
+                        submitPassword.disabled = false;
+                        attemptsLeft = 3;
+                        attemptsDisplay.textContent = attemptsLeft;
+                    }, 3000);
+                }
+            }
+        });
+
+        closeSecretModal.addEventListener('click', () => {
+            secretContentModal.classList.add('hidden');
+        });
+
+        // Close modals when clicking outside
+        [passwordModal, secretContentModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
