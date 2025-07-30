@@ -44,45 +44,116 @@
             letter-spacing: 3px;
             font-size: 1.2rem;
         }
+        .people-list {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #d00 #222;
+        }
+        .people-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .people-list::-webkit-scrollbar-track {
+            background: #222;
+        }
+        .people-list::-webkit-scrollbar-thumb {
+            background-color: #d00;
+            border-radius: 6px;
+        }
+        .person-tag {
+            transition: all 0.3s ease;
+        }
+        .person-tag:hover {
+            background-color: #d00;
+            transform: translateX(5px);
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 bg-gray-900">
-    <div class="max-w-4xl mx-auto">
-        <!-- Header -->
-        <header class="text-center mb-8 border-b border-red-900 pb-4">
-            <h1 class="text-3xl text-red-500 mb-2">
-                <i class="fas fa-database mr-2"></i> SECURE PERSONNEL DATABASE
-            </h1>
-            <p class="text-gray-400">CLASSIFIED - LEVEL 4 CLEARANCE REQUIRED</p>
-        </header>
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row gap-8">
+        <!-- Main Content -->
+        <div class="flex-1">
+            <!-- Header -->
+            <header class="text-center mb-8 border-b border-red-900 pb-4">
+                <h1 class="text-3xl text-red-500 mb-2">
+                    <i class="fas fa-database mr-2"></i> SECURE PERSONNEL DATABASE
+                </h1>
+                <p class="text-gray-400">CLASSIFIED - LEVEL 4 CLEARANCE REQUIRED</p>
+            </header>
 
-        <!-- Search Box -->
-        <div class="search-box p-4 rounded-lg mb-8">
-            <div class="flex">
-                <input type="text" id="searchInput" placeholder="Enter target name..." 
-                       class="flex-grow bg-black border border-red-700 p-3 text-white focus:outline-none focus:ring-1 focus:ring-red-500">
-                <button id="searchBtn" class="bg-red-900 hover:bg-red-800 text-white px-6 ml-2 transition">
-                    <i class="fas fa-search mr-2"></i> SEARCH
-                </button>
+            <!-- Search Box -->
+            <div class="search-box p-4 rounded-lg mb-8">
+                <div class="flex">
+                    <input type="text" id="searchInput" placeholder="Enter target name..." 
+                           class="flex-grow bg-black border border-red-700 p-3 text-white focus:outline-none focus:ring-1 focus:ring-red-500">
+                    <button id="searchBtn" class="bg-red-900 hover:bg-red-800 text-white px-6 ml-2 transition">
+                        <i class="fas fa-search mr-2"></i> SEARCH
+                    </button>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-12">
+                <i class="fas fa-user-secret text-5xl text-red-500 mb-4"></i>
+                <h3 class="text-xl text-red-400 mb-2">NO SEARCH PERFORMED</h3>
+                <p class="text-gray-400">Enter a name to begin database query</p>
+            </div>
+
+            <!-- Results Container -->
+            <div id="resultsContainer" class="space-y-6 hidden">
+                <!-- Results will be inserted here -->
+            </div>
+
+            <!-- Top Secret Button (hidden by default) -->
+            <button id="topSecretBtn" class="top-secret-btn text-white py-3 px-6 rounded-lg mt-8 mx-auto hidden flex items-center">
+                <i class="fas fa-lock mr-2"></i> ACCESS TOP SECRET FILES
+            </button>
+        </div>
+
+        <!-- People List Sidebar -->
+        <div class="md:w-64 bg-black p-4 rounded-lg border border-red-900 h-fit">
+            <h3 class="text-lg text-red-500 mb-4 flex items-center">
+                <i class="fas fa-list mr-2"></i> PERSONNEL INDEX
+            </h3>
+            <div class="people-list space-y-2">
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Ali Mehdiyev">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Ali Mehdiyev
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Kamal Tagiyev">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Kamal Tagiyev
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Elchin Sadiqzade">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Elchin Sadiqzade
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Wagif Sadiqzade">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Wagif Sadiqzade
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Zarina Aliyeva">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Zarina Aliyeva
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Ruslan Mammadov">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Ruslan Mammadov
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Aysel Ismayilova">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Aysel Ismayilova
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Orkhan Hasanov">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Orkhan Hasanov
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Leyla Qasimova">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Leyla Qasimova
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Farid Abdullayev">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Farid Abdullayev
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Gunay Mammadova">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Gunay Mammadova
+                </div>
+                <div class="person-tag bg-gray-900 p-2 rounded cursor-pointer" data-name="Tural Huseynov">
+                    <i class="fas fa-user mr-2 text-red-400"></i> Tural Huseynov
+                </div>
             </div>
         </div>
-
-        <!-- Empty State -->
-        <div id="emptyState" class="text-center py-12">
-            <i class="fas fa-user-secret text-5xl text-red-500 mb-4"></i>
-            <h3 class="text-xl text-red-400 mb-2">NO SEARCH PERFORMED</h3>
-            <p class="text-gray-400">Enter a name to begin database query</p>
-        </div>
-
-        <!-- Results Container -->
-        <div id="resultsContainer" class="space-y-6 hidden">
-            <!-- Results will be inserted here -->
-        </div>
-
-        <!-- Top Secret Button (hidden by default) -->
-        <button id="topSecretBtn" class="top-secret-btn text-white py-3 px-6 rounded-lg mt-8 mx-auto hidden flex items-center">
-            <i class="fas fa-lock mr-2"></i> ACCESS TOP SECRET FILES
-        </button>
     </div>
 
     <!-- Password Modal -->
@@ -176,7 +247,7 @@
                 status: "ACTIVE",
                 statusColor: "text-green-400",
                 location: "Baku, Azerbaijan",
-                associates: ["", "REDACTED", "REDACTED"],
+                associates: ["Kamal T.", "REDACTED", "REDACTED"],
                 notes: [
                     "Subject shows exceptional technical skills",
                     "Possible connection to 2022 incident"
@@ -194,7 +265,7 @@
                 status: "UNDER SURVEILLANCE",
                 statusColor: "text-yellow-400",
                 location: "Undisclosed, Azerbaijan",
-                associates: ["", "REDACTED", "REDACTED"],
+                associates: ["Ali M.", "REDACTED", "REDACTED"],
                 notes: [
                     "Subject possesses sensitive knowledge",
                     "Confirmed financial anomalies"
@@ -211,8 +282,8 @@
                 clearance: "LEVEL 3",
                 status: "IN PROTECTION",
                 statusColor: "text-blue-400",
-                location: "Baku, safe house",
-                associates: ["", "REDACTED"],
+                location: "Ganja, safe house",
+                associates: ["Wagif S.", "REDACTED"],
                 notes: [
                     "Primary informant for region",
                     "Has provided 87 verified reports"
@@ -229,49 +300,160 @@
                 clearance: "LEVEL 4",
                 status: "ACTIVE",
                 statusColor: "text-green-400",
-                location: "Baku, street Mehmandarov 94",
-                associates: [""],
+                location: "Sumqayit, apartment 4B",
+                associates: ["Elchin S.", "REDACTED", "Cavidan M."],
                 notes: [
                     "Master of encryption techniques",
                     "Developed secure comms protocol"
-                  ]
-            },
-            {
-                id: 5,
-                name: "Ilham Abdulov",
-                clearance: "LEVEL 3",
-                status: "IN PROTECTION",
-                statusColor: "text-blue-400",
-                location: "Baku, Azerbaijan",
-                associates: ["", "REDACTED"],
-                notes: [
-                    "Primary informant for region",
-                    "Has provided 2 verified reports"
                 ],
-
-
                 secrets: [
                     "Former military intelligence",
-                    "Created unbreakable cyber in 2023",
-                    "WARNING: high-value expectacing target"
+                    "Created unbreakable cipher in 2019",
+                    "WARNING: high-value target"
                 ]
             },
             {
                 id: 5,
-                name: "Zaeina Əliyev",
-                clearance: "LEVEL 5",
-                status: "Objective",
-                statusColor: "text-purple-400",
+                name: "Zarina Aliyeva",
+                clearance: "LEVEL 3",
+                status: "MONITORED",
+                statusColor: "text-yellow-400",
                 location: "Baku, Azerbaijan",
+                associates: ["REDACTED", "Leyla Q."],
+                notes: [
+                    "Suspected informant network",
+                    "Multiple aliases detected"
+                ],
+                secrets: [
+                    "Connected to underground network",
+                    "Uses encrypted burner phones",
+                    "Caution: armed and dangerous"
+                ]
+            },
+            {
+                id: 6,
+                name: "Ruslan Mammadov",
+                clearance: "LEVEL 2",
+                status: "INACTIVE",
+                statusColor: "text-gray-400",
+                location: "Baku, Azerbaijan",
+                associates: ["Orkhan H.", "Farid A."],
+                notes: [
+                    "Former operative",
+                    "Discharged after 2019 incident"
+                ],
+                secrets: [
+                    "Knowledge of classified protocols",
+                    "Possible security risk",
+                    "Monitor communications"
+                ]
+            },
+            {
+                id: 7,
+                name: "Aysel Ismayilova",
+                clearance: "LEVEL 5",
+                status: "BLACK OPS",
+                statusColor: "text-purple-400",
+                location: "Mobile, Azerbaijan",
                 associates: ["REDACTED", "REDACTED"],
                 notes: [
-                    "No digital footprint since 2018",
-                    "Suspected deep cover operation"
+                    "No digital footprint since 2020",
+                    "Specializes in deep cover operations"
                 ],
                 secrets: [
                     "True identity: classified",
-                    "Current mission: absolute secrecy",
+                    "Current mission: Operation Silent Shadow",
                     "DIRECTIVE: do not approach"
+                ]
+            },
+            {
+                id: 8,
+                name: "Orkhan Hasanov",
+                clearance: "LEVEL 3",
+                status: "ACTIVE",
+                statusColor: "text-green-400",
+                location: "Baku, Azerbaijan",
+                associates: ["Ruslan M.", "Tural H."],
+                notes: [
+                    "Technical specialist",
+                    "Develops surveillance equipment"
+                ],
+                secrets: [
+                    "Created undetectable bugs",
+                    "Knows backdoor access codes",
+                    "WARNING: fragile mental state"
+                ]
+            },
+            {
+                id: 9,
+                name: "Leyla Qasimova",
+                clearance: "LEVEL 4",
+                status: "WATCHLIST",
+                statusColor: "text-yellow-400",
+                location: "Baku, Azerbaijan",
+                associates: ["Zarina A.", "Gunay M."],
+                notes: [
+                    "Suspected double agent",
+                    "Frequent border crossings"
+                ],
+                secrets: [
+                    "Confirmed contact with foreign agents",
+                    "Uses sophisticated encryption",
+                    "APPROACH WITH CAUTION"
+                ]
+            },
+            {
+                id: 10,
+                name: "Farid Abdullayev",
+                clearance: "LEVEL 2",
+                status: "RETIRED",
+                statusColor: "text-gray-400",
+                location: "Ganja, Azerbaijan",
+                associates: ["Ruslan M.", "REDACTED"],
+                notes: [
+                    "Former field operative",
+                    "Medical discharge 2021"
+                ],
+                secrets: [
+                    "Knowledge of cold war protocols",
+                    "Possible memory gaps",
+                    "Low priority surveillance"
+                ]
+            },
+            {
+                id: 11,
+                name: "Gunay Mammadova",
+                clearance: "LEVEL 3",
+                status: "ACTIVE",
+                statusColor: "text-green-400",
+                location: "Baku, Azerbaijan",
+                associates: ["Leyla Q.", "REDACTED"],
+                notes: [
+                    "Linguistics specialist",
+                    "Fluent in 6 languages"
+                ],
+                secrets: [
+                    "Interrogation expert",
+                    "Knows classified interrogation techniques",
+                    "Valuable asset but unpredictable"
+                ]
+            },
+            {
+                id: 12,
+                name: "Tural Huseynov",
+                clearance: "LEVEL 4",
+                status: "MIA",
+                statusColor: "text-red-400",
+                location: "Unknown",
+                associates: ["Orkhan H.", "REDACTED"],
+                notes: [
+                    "Missing since 2022-11-15",
+                    "Last seen near border"
+                ],
+                secrets: [
+                    "Possible capture by hostile forces",
+                    "Knows emergency protocols",
+                    "CODE BLACK if sighted"
                 ]
             }
         ];
@@ -290,6 +472,7 @@
         const secretContentModal = document.getElementById('secretContentModal');
         const closeSecretModal = document.getElementById('closeSecretModal');
         const attemptsDisplay = document.getElementById('attempts');
+        const personTags = document.querySelectorAll('.person-tag');
 
         let attemptsLeft = 3;
 
@@ -363,13 +546,22 @@
                         <p class="text-gray-400">Full Disclosure:</p>
                         <div class="bg-black p-3 rounded border border-red-900 text-red-400">
                             <p class="mb-2">// CLASSIFIED - EYES ONLY //</p>
-                            ${person.secrets.map(secret => `<p>${secret}</p>`).join('')}
+                            ${person.secrets ? person.secrets.map(secret => `<p>${secret}</p>`).join('') : 'DATA EXPUNGED'}
                         </div>
                     </div>
                 `;
                 resultsContainer.appendChild(card);
             });
         }
+
+        // Click handler for person tags
+        personTags.forEach(tag => {
+            tag.addEventListener('click', function() {
+                const personName = this.getAttribute('data-name');
+                searchInput.value = personName;
+                searchPeople(personName);
+            });
+        });
 
         // Event listeners
         searchBtn.addEventListener('click', () => searchPeople(searchInput.value));
